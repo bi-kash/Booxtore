@@ -1,0 +1,80 @@
+{
+  "site_name": "Booxtore",
+  "site_title": "Booxtore",
+  "logo_text": "Booxtore",
+  "instagram_account": "booxtore",
+  "twitter_account": "@booxtore",
+  "facebook_account": "profile.php?id=61586517677428",
+  "base_url": "https://booxtore.com",
+  "site_keywords": [
+    {
+      "keyword": "Booxtore"
+    },
+    {
+      "keyword": "Confidence & Growth"
+    },
+    {
+      "keyword": "Fashion"
+    },
+    {
+      "keyword": "Wellness"
+    },
+    {
+      "keyword": "Self Care"
+    },
+    {
+      "keyword": "Hair"
+    },
+    {
+      "keyword": "Beauty"
+    }
+  ],
+  "site_description": "Booxtore is a female-focused digital media platform dedicated to empowering women to lead confident, healthy, and stylish lives. We provide expert advice, inspiration, and resources on topics ranging from beauty and fashion to wellness and personal growth.",
+  "seo_meta_title": "",
+  "seo_meta_description": "",
+  "seo_meta_keywords": "",
+  "contact_address": "Kathmandu, Nepal",
+  "contact_phonenumber": "+977 9840889975",
+  "contact_email": "booxtore@gmail.com",
+  "posts_per_page": 9,
+  "use_api_categories": false,
+  "predefined_categories": [
+    {
+      "id": 1,
+      "name": "Beauty",
+      "slug": "beauty"
+    },
+    {
+      "id": 2,
+      "name": "Hair",
+      "slug": "hair"
+    },
+    {
+      "id": 3,
+      "name": "Self Care",
+      "slug": "self-care"
+    },
+    {
+      "id": 4,
+      "name": "Wellness",
+      "slug": "wellness"
+    },
+    {
+      "id": 5,
+      "name": "Fashion",
+      "slug": "fashion"
+    },
+    {
+      "id": 6,
+      "name": "Confidence & Growth",
+      "slug": "confidence-growth"
+    },
+    {
+      "id": 7,
+      "name": "Relationships",
+      "slug": "relationships"
+    }
+  ],
+  "podcast_cover_url": "https://res.cloudinary.com/yacloud/image/upload/v1614332851/ya-pod_gi1tmm.jpg",
+  "mood_cover_url": "/images/mood/v5/mood-v5-cover.jpg"
+}
