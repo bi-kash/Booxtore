@@ -567,6 +567,7 @@ X-Tenant-ID: <tenant_id> (optional)
 ```
 
 **Query Parameters:**
+
 - `status`: Filter by status (pending, read, replied, archived, spam)
 - `page`: Page number (default: 1)
 - `limit`: Results per page (default: 50, max: 100)
@@ -722,39 +723,43 @@ X-Tenant-ID: <tenant_id> (optional)
   "topic": "The Future of Artificial Intelligence",
   "keywords": ["AI", "machine learning", "future tech"],
   "tone": "professional",
-  "length": "medium"
+  "length": "medium",
+  "generate_image": true,
+  "include_content_images": false
 }
 ```
+
+**Request Parameters:**
+
+- `category_id` (required): Category ID for the article
+- `topic` (required): Main topic/subject for the article
+- `keywords` (optional): Array of target keywords to include
+- `tone` (optional): Writing tone (default: "professional")
+- `length` (optional): Article length - "short", "medium", or "long" (default: "medium")
+- `generate_image` (optional): Whether to generate a main featured image using DALL-E (default: `true`)
+- `include_content_images` (optional): Whether to include relevant images within the content (default: `false`)
 
 **Response (201):**
 
 ```json
 {
-  "message": "Article generated successfully",
-  "article": {
-    "id": 1,
-    "title": "The Future of Artificial Intelligence: What Lies Ahead",
-    "slug": "the-future-of-artificial-intelligence-what-lies-ahead",
-    "content": "Full markdown content...",
-    "excerpt": "Explore the cutting-edge developments...",
-    "image": "https://your-cdn.cloudfront.net/articles/123/main/abc123.jpg",
-    "category_id": 1,
-    "category_name": "Technology",
-    "user_id": 1,
-    "tenant_id": "550e8400-e29b-41d4-a716-446655440000",
-    "status": "draft",
-    "is_featured": false,
-    "view_count": 0,
-    "created_at": "2025-01-01T00:00:00.000000",
-    "updated_at": "2025-01-01T00:00:00.000000",
-    "published_at": null,
-    "seo_meta_title": "The Future of AI: What Lies Ahead in 2025",
-    "seo_meta_description": "Discover the latest trends...",
-    "seo_focus_keyword": "artificial intelligence",
-    "seo_summary": "Article summary",
-    "tags": ["AI", "Technology", "Future"],
-    "keywords": ["artificial intelligence", "machine learning", "AI trends"]
-  }
+  "id": 1,
+  "title": "The Future of Artificial Intelligence: What Lies Ahead",
+  "slug": "the-future-of-artificial-intelligence-what-lies-ahead",
+  "content": "Full markdown content...",
+  "excerpt": "Explore the cutting-edge developments...",
+  "image": "https://oaidalleapiprodscus.blob.core.windows.net/...",
+  "category": "Technology",
+  "status": "draft",
+  "is_featured": false,
+  "created_at": "2025-01-01T00:00:00.000000",
+  "seo": {
+    "meta_title": "The Future of AI: What Lies Ahead in 2025",
+    "meta_description": "Discover the latest trends..."
+  },
+  "tags": ["AI", "Technology", "Future"],
+  "keywords": ["artificial intelligence", "machine learning", "AI trends"],
+  "tenant_id": "550e8400-e29b-41d4-a716-446655440000"
 }
 ```
 
@@ -764,6 +769,11 @@ X-Tenant-ID: <tenant_id> (optional)
 - Article created with status "draft"
 - Returns 429 if limit exceeded
 - Task runs asynchronously via Celery
+- **NEW**: AI-generated content no longer includes redundant title headers (starts directly with content)
+- **NEW**: Optional DALL-E image generation for main article featured image
+- **NEW**: Generated images are automatically processed and uploaded to S3/CDN
+- **DALL-E Costs**: Standard quality 1792x1024 images cost approximately $0.080 per image
+- Image URLs from DALL-E expire after 1 hour - they are automatically downloaded and uploaded to your S3 bucket
 
 ---
 
@@ -804,6 +814,7 @@ X-Tenant-ID: <tenant_id> (optional)
 
 - `status` (optional): `draft`, `published`, `archived`
 - `category_id` (optional): Filter by category
+- `category_slug` (optional): Filter by category using human-readable slug (frontend-friendly; resolves to `category_id` server-side)
 - `is_featured` (optional): `true`, `false`
 - `limit` (optional): Default 50, max 100
 - `offset` (optional): Default 0
@@ -849,6 +860,57 @@ X-Tenant-ID: <tenant_id> (optional)
 - `comment_count` and `view_count` are always included
 - With `X-Tenant-ID`: Returns tenant articles + global articles (tenant_id=NULL)
 - Without `X-Tenant-ID` or auth: Returns only published articles
+
+Additional: Filter by category slug
+
+- You can pass `category_slug` instead of `category_id` when calling `GET /api/v1/articles`. The backend resolves the slug to the category (respecting `X-Tenant-ID`) and returns the same response shape as the `category_id` filter. If the slug is not found the endpoint returns an empty `articles` array (200).
+
+---
+
+### Get Articles By Category Slug
+
+```http
+GET /api/v1/articles/category/<slug>
+X-Tenant-ID: <tenant_id> (optional)
+```
+
+Use this dedicated endpoint when the frontend only knows the category slug (SEO-friendly URLs). It returns category metadata plus the articles in that category and supports the same filters as `GET /api/v1/articles`.
+
+**Query Parameters (supports same filters as `GET /api/v1/articles`):**
+
+- `status` (optional): `draft`, `published`, `archived`
+- `is_featured` (optional): `true`, `false`
+- `per_page` / `limit` (optional): Default 50
+- `offset` (optional): Default 0
+- `user_only` (optional): `true` - If authenticated, show only user's articles
+- `sort` / `order` (optional)
+
+**Response (200):**
+
+```json
+{
+  "category": {
+    "id": 1,
+    "name": "Technology",
+    "slug": "technology",
+    "description": "Technology related articles"
+  },
+  "total": 42,
+  "limit": 10,
+  "offset": 0,
+  "page": 1,
+  "per_page": 10,
+  "sort_by": "popularity",
+  "sort_order": "desc",
+  "articles": [ /* same article objects as List Articles */ ]
+}
+```
+
+**Notes:**
+
+- Respects `X-Tenant-ID`; returns tenant-specific + global articles when tenant present.
+- Returns `404` if category slug does not exist for the tenant scope.
+
 
 ---
 
@@ -1132,6 +1194,35 @@ X-Tenant-ID: <tenant_id> (optional)
 ```
 
 ---
+
+### Get Category By Slug
+
+```http
+GET /api/v1/categories/slug/<slug>
+X-Tenant-ID: <tenant_id> (optional)
+```
+
+Fetch a category by its human-readable `slug`. This endpoint mirrors `GET /api/v1/categories/<id>` but accepts the slug instead of the numeric ID. When `X-Tenant-ID` is present the server resolves the slug within the tenant scope (and will also return global categories when appropriate).
+
+**Response (200):**
+
+```json
+{
+  "id": 1,
+  "name": "Technology",
+  "slug": "technology",
+  "description": "Technology related articles",
+  "tenant_id": null,
+  "created_at": "2025-01-01T00:00:00.000000",
+  "article_count": 42
+}
+```
+
+**Notes:**
+
+- Returns `404` if slug not found within the resolved tenant/global scope.
+- Useful for frontend routing and SEO-friendly category pages.
+
 
 ### Create Category
 

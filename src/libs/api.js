@@ -136,42 +136,27 @@ export async function fetchHero() {
 export async function fetchByCategory(slug) {
   if (!slug) return { articles: [], category: null }
 
-  // First, get the category by slug
-  const categories = await fetchCategories()
-  const category = categories.find(cat => cat.slug === slug)
-
-  if (!category) return { articles: [], category: null }
-
-  // Use category_id for API query (as per API documentation)
-  // Note: category_id requires numeric ID, not slug
-  const queryParams = new URLSearchParams({
-    status: "published",
-    sort: "date",
-    order: "desc",
-  })
-
-  // Only add category_id if we have a numeric id from API categories
-  if (category.id) {
-    queryParams.append("category_id", category.id.toString())
-  }
-
-  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
-  
-  // If using predefined categories (no ID), filter articles client-side by category slug/name
-  let articles = (data.articles || []).map(normalizeArticle)
-  
-  if (!category.id) {
-    // Client-side filtering for predefined categories
-    articles = articles.filter(article => {
-      const articleCategorySlug = article.category?.slug || 
-        (typeof article.category === 'string' ? article.category.toLowerCase().replace(/\s+/g, '-') : null)
-      return articleCategorySlug === slug
+  try {
+    // Use dedicated category slug endpoint - handles filtering server-side
+    const queryParams = new URLSearchParams({
+      status: "published",
+      sort: "date",
+      order: "desc",
     })
-  }
 
-  return {
-    articles,
-    category: { name: category.name, slug: category.slug },
+    const data = await fetchAPI(
+      `/api/v1/articles/category/${slug}?${queryParams}`
+    )
+
+    return {
+      articles: (data.articles || []).map(normalizeArticle),
+      category: data.category
+        ? { name: data.category.name, slug: data.category.slug }
+        : null,
+    }
+  } catch (error) {
+    console.error("Error fetching category articles:", error)
+    return { articles: [], category: null }
   }
 }
 
@@ -179,22 +164,6 @@ export async function fetchPaginated(page = 1, categorySlug = null) {
   const limit = siteSettings.posts_per_page || 9
   const offset = (page - 1) * limit
 
-  if (!categorySlug) {
-    const data = await fetchAPI(
-      `/api/v1/articles?status=published&limit=${limit}&offset=${offset}&sort=date&order=desc`
-    )
-    return (data.articles || []).map(normalizeArticle)
-  }
-
-  // Get category ID from slug for proper API filtering
-  const categories = await fetchCategories()
-  const category = categories.find(cat => cat.slug === categorySlug)
-
-  if (!category) {
-    return []
-  }
-
-  // Build query with category_id if available
   const queryParams = new URLSearchParams({
     status: "published",
     limit: limit.toString(),
@@ -203,23 +172,21 @@ export async function fetchPaginated(page = 1, categorySlug = null) {
     order: "desc",
   })
 
-  if (category.id) {
-    queryParams.append("category_id", category.id.toString())
+  if (!categorySlug) {
+    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+    return (data.articles || []).map(normalizeArticle)
   }
 
-  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
-  let articles = (data.articles || []).map(normalizeArticle)
-
-  // Client-side filtering for predefined categories (no ID)
-  if (!category.id) {
-    articles = articles.filter(article => {
-      const articleCategorySlug = article.category?.slug || 
-        (typeof article.category === 'string' ? article.category.toLowerCase().replace(/\s+/g, '-') : null)
-      return articleCategorySlug === categorySlug
-    })
+  // Use dedicated category slug endpoint - handles filtering server-side
+  try {
+    const data = await fetchAPI(
+      `/api/v1/articles/category/${categorySlug}?${queryParams}`
+    )
+    return (data.articles || []).map(normalizeArticle)
+  } catch (error) {
+    console.error("Error fetching paginated category articles:", error)
+    return []
   }
-
-  return articles
 }
 
 export async function fetchArticle(slug) {
