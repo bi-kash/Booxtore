@@ -253,7 +253,7 @@ export default function Footer() {
   return (
     <Box
       w="100%"
-      bgColor="white"
+      bgColor="gray.50"
       borderTopWidth="1px"
       borderTopColor="gray.200"
       borderTopStyle="solid"
@@ -274,13 +274,16 @@ export default function Footer() {
           spacing={6}
           mt={{ base: 8, md: 0 }}
         >
-          <Logo fontSize={{ base: "1.5rem", md: "1.25rem" }} />
+          <Logo size="lg" />
+          <Text fontSize="sm" color="gray.600" maxW="280px" lineHeight="1.6">
+            Your curated book discovery destination. Find your next great read.
+          </Text>
           <HStack
             spacing={1}
             align="center"
-            color="brand.gray"
+            color="gray.500"
             order={{ base: 1, md: 0 }}
-            fontSize={{ base: "sm", lg: "md" }}
+            fontSize={{ base: "xs", lg: "sm" }}
             wordBreak="break-word"
           >
             <Icon aria-label="copyright icon" as={MdCopyright} />
@@ -288,34 +291,34 @@ export default function Footer() {
               {siteName} {new Date().getFullYear()}. All rights reserved.
             </Text>
           </HStack>
-          <HStack color="gray.700" spacing={{ base: 2, md: 3 }}>
-            <Center p={2} bgColor="brand.main" color="white">
-              <Icon as={FiLink} boxSize="1em" aria-label="External links" />
-            </Center>
+          <HStack color="gray.600" spacing={{ base: 2, md: 3 }} fontSize="sm">
             <ChakraLink
               href={`/redirect?url=https://www.instagram.com/${config.instagram_account}`}
               aria-label={`${siteName} Instagram`}
               isExternal
               rel="noopener"
               cursor="pointer"
+              fontWeight="500"
               _hover={{
                 textDecoration: "underline",
-                color: "black",
+                color: "brand.primary",
               }}
             >
-              INSTAGRAM
+              Instagram
             </ChakraLink>
+            <Text color="gray.300">•</Text>
             <ChakraLink
               href={`/redirect?url=https://www.facebook.com/${config.facebook_account}`}
               aria-label={`${siteName} Facebook`}
               cursor="pointer"
+              fontWeight="500"
               rel="noopener"
               _hover={{
                 textDecoration: "underline",
-                color: "black",
+                color: "brand.primary",
               }}
             >
-              FACEBOOK
+              Facebook
             </ChakraLink>
           </HStack>
         </VStack>
@@ -328,8 +331,8 @@ export default function Footer() {
           pos="relative"
         >
           <VStack align={{ base: "flex-start" }} spacing={4}>
-            <FooterTitle>CATEGORIES</FooterTitle>
-            {displayCategories.slice(0, 5).map(category => (
+            <FooterTitle>BROWSE</FooterTitle>
+            {displayCategories.slice(0, 6).map(category => (
               <FooterLink
                 key={category.slug}
                 path={CATEGORY_ID_ROUTE(category.slug)}
@@ -340,9 +343,9 @@ export default function Footer() {
           </VStack>
 
           <VStack align={{ base: "flex-start" }} spacing={4}>
-            <FooterTitle>ABOUT</FooterTitle>
+            <FooterTitle>COMPANY</FooterTitle>
             <FooterLink path="/about-us">About Us</FooterLink>
-            <FooterLink path="/meet-the-team">Meet The Team</FooterLink>
+            <FooterLink path="/authors">Our Authors</FooterLink>
             <FooterLink path="/privacy-policy">Privacy Policy</FooterLink>
             <FooterLink path="/terms-of-service">Terms of Service</FooterLink>
           </VStack>
@@ -351,7 +354,7 @@ export default function Footer() {
             w={{ base: "full", md: "unset" }}
             align="flex-start"
           >
-            <FooterTitle>CONTACT US</FooterTitle>
+            <FooterTitle>GET IN TOUCH</FooterTitle>
             <FooterForm
               form={form}
               setForm={setForm}

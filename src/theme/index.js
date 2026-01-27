@@ -2,15 +2,22 @@ import { extendTheme, theme as chakraTheme } from "@chakra-ui/react"
 
 const theme = extendTheme({
   fonts: {
-    heading: "Lora, sans-serif",
-    body: "Karla, sans-serif",
-    serif: "Lora, serif",
+    heading: "'Playfair Display', Georgia, serif",
+    body: "'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif",
+    serif: "'Playfair Display', Georgia, serif",
+    mono: "'JetBrains Mono', 'Fira Code', monospace",
   },
   colors: {
     brand: {
-      main: chakraTheme.colors.black,
-      light: chakraTheme.colors.black,
-      gray: "#57576B",
+      // Warm, bookish color palette
+      primary: "#8B4513", // Saddle brown - leather book binding
+      secondary: "#2F4F4F", // Dark slate - sophisticated ink
+      accent: "#DAA520", // Goldenrod - bookplate gold
+      cream: "#FDFBF7", // Off-white - aged paper
+      parchment: "#F5F1E8", // Parchment - reading background
+      ink: "#1F2937", // Dark ink for text
+      gray: "#6B7280",
+      lightGray: "#9CA3AF",
     },
   },
   breakpoints: {
@@ -20,78 +27,132 @@ const theme = extendTheme({
     xl: "80em", // laptop
     xxl: "96em", // pc
   },
+  components: {
+    Button: {
+      baseStyle: {
+        fontWeight: "600",
+        borderRadius: "sm",
+      },
+      variants: {
+        primary: {
+          bg: "brand.primary",
+          color: "white",
+          _hover: { bg: "#7A3D11", transform: "translateY(-1px)" },
+        },
+        outline: {
+          borderColor: "brand.primary",
+          color: "brand.primary",
+          _hover: { bg: "brand.parchment" },
+        },
+      },
+    },
+    Heading: {
+      baseStyle: {
+        fontFamily: "'Playfair Display', Georgia, serif",
+        fontWeight: "700",
+        color: "brand.ink",
+      },
+    },
+    Text: {
+      baseStyle: {
+        color: "gray.700",
+        lineHeight: "1.7",
+      },
+    },
+    Link: {
+      baseStyle: {
+        color: "brand.primary",
+        _hover: { textDecoration: "underline", color: "brand.secondary" },
+      },
+    },
+  },
   styles: {
     global: {
       "::selection": {
-        color: chakraTheme.colors.black,
-        background: chakraTheme.colors.cyan[300],
+        color: "white",
+        background: "#8B4513",
       },
       "::-webkit-scrollbar": {
-        width: "0.7em",
+        width: "0.5em",
+      },
+      "::-webkit-scrollbar-track": {
+        background: "#F5F1E8",
       },
       "::-webkit-scrollbar-thumb": {
         transition: "150ms all ease-in-out",
-        bgColor: chakraTheme.colors.gray[300],
+        bgColor: "#D4C4A8",
+        borderRadius: "full",
       },
       "::-webkit-scrollbar-thumb:hover": {
-        background: chakraTheme.colors.gray[400],
+        background: "#B8A88A",
       },
       html: {
         scrollBehavour: "smooth",
       },
       "html, body": {
         overflowX: "hidden",
-        backgroundColor: "white",
+        backgroundColor: "#FDFBF7", // Cream background for reading comfort
+        color: "#1F2937",
+        fontSize: "16px",
+        lineHeight: "1.7",
       },
-      ".ya-logo": {
-        p: {
-          fontFamily: "'Montserrat', sans-serif",
-        },
+      ".booxtore-logo": {
+        fontFamily: "'Georgia', 'Times New Roman', serif",
       },
       ".markdown": {
         "div.end-p": {
           marginBottom: 4,
         },
         a: {
-          color: chakraTheme.colors.teal[500],
+          color: "#8B4513",
+          fontWeight: "500",
           _hover: {
             textDecoration: "underline",
+            color: "#6B3410",
           },
         },
         p: {
-          lineHeight: 7,
+          lineHeight: "1.8",
           marginY: 6,
           fontSize: "lg",
+          color: "#374151",
         },
         "h1, h2, h3, h4, h5, h6": {
-          fontFamily: "Lora",
+          fontFamily: "'Playfair Display', Georgia, serif",
           fontWeight: 700,
-          marginTop: 6,
-          marginBottom: 2,
+          marginTop: 8,
+          marginBottom: 4,
           textOverflow: "ellipsis",
-          lineHeight: "initial",
+          lineHeight: "1.3",
+          color: "#1F2937",
         },
         h1: {
-          fontSize: "5xl",
-        },
-        h2: {
           fontSize: "4xl",
         },
-        h3: {
+        h2: {
           fontSize: "3xl",
         },
-        h4: {
+        h3: {
           fontSize: "2xl",
         },
-        h5: {
+        h4: {
           fontSize: "xl",
         },
-        h6: {
+        h5: {
           fontSize: "lg",
         },
+        h6: {
+          fontSize: "md",
+        },
         blockquote: {
-          pl: 4,
+          pl: 6,
+          py: 2,
+          my: 6,
           pos: "relative",
+          fontStyle: "italic",
+          color: "#4B5563",
+          bg: "#F9F7F3",
+          borderRadius: "md",
           _before: {
             content: "''",
             display: "block",
@@ -99,23 +160,27 @@ const theme = extendTheme({
             top: 0,
             left: 0,
             bottom: 0,
-            width: 1,
-            bgColor: chakraTheme.colors.teal[400],
+            width: "4px",
+            bgColor: "#8B4513",
+            borderRadius: "full",
           },
         },
         table: {
           maxWidth: "full",
           borderSpacing: 0,
           mt: 6,
+          borderRadius: "md",
+          overflow: "hidden",
           thead: {
-            background: chakraTheme.colors.gray[100],
+            background: "#F5F1E8",
           },
           th: {
-            fontWeight: 500,
+            fontWeight: 600,
+            color: "#1F2937",
           },
           "th, td": {
-            padding: "0.5em 1em",
-            border: "1px double #eeeeee",
+            padding: "0.75em 1em",
+            border: "1px solid #E5E1D8",
           },
         },
         "ol, ul": {
@@ -123,23 +188,23 @@ const theme = extendTheme({
           fontSize: "lg",
         },
         li: {
-          lineHeight: 6,
-          marginLeft: 4,
-          paddingLeft: 0,
-          marginBottom: 2,
+          lineHeight: "1.8",
+          marginLeft: 6,
+          paddingLeft: 2,
+          marginBottom: 3,
         },
       },
       "#nprogress": {
         pointerEvents: "none",
       },
       "#nprogress .bar": {
-        background: chakraTheme.colors.yellow[500],
+        background: "#8B4513",
         pos: "fixed",
         zIndex: 99999,
         top: 0,
         left: 0,
         width: "full",
-        height: 1,
+        height: "3px",
       },
       ".nprogress-custom-parent": {
         overflow: "hidden",

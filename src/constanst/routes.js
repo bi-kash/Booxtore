@@ -50,12 +50,23 @@ export const navigationLinks = [
   },
 ]
 
+// Footer links - organized for a book-focused site
 export const footerLinks = [
   { name: "Home", path: HOME_ROUTE },
-  { name: "Articles", path: ARTICLE_ROUTE },
-  { name: "Magazines", path: MAGAZINE_ROUTE },
+  { name: "All Articles", path: ARTICLE_ROUTE },
+  { name: "Book Reviews", path: CATEGORY_ID_ROUTE("book-reviews") },
+  { name: "Recommendations", path: CATEGORY_ID_ROUTE("recommendations") },
+  { name: "New Releases", path: CATEGORY_ID_ROUTE("new-releases") },
   { name: "Authors", path: AUTHORS_ROUTE },
   { name: "About Us", path: ABOUT_US_ROUTE },
-  { name: "Meet the Team", path: MEET_THE_TEAM_ROUTE },
-  { name: "Gallery", path: GALLERY_ROUTE },
+]
+
+// Additional footer category links
+export const footerCategoryLinks = [
+  { name: "Fiction", path: CATEGORY_ID_ROUTE("fiction") },
+  { name: "Non-Fiction", path: CATEGORY_ID_ROUTE("non-fiction") },
+  { name: "Self-Help", path: CATEGORY_ID_ROUTE("self-help") },
+  { name: "Business & Finance", path: CATEGORY_ID_ROUTE("business-finance") },
+  { name: "Classics", path: CATEGORY_ID_ROUTE("classics") },
+  { name: "Children & YA", path: CATEGORY_ID_ROUTE("children-ya") },
 ]

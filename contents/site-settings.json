@@ -1,7 +1,8 @@
 {
   "site_name": "Booxtore",
-  "site_title": "Booxtore",
+  "site_title": "Booxtore - Your Curated Book Discovery Destination",
   "logo_text": "Booxtore",
+  "tagline": "Discover Your Next Great Read",
   "instagram_account": "booxtore",
   "twitter_account": "@booxtore",
   "facebook_account": "profile.php?id=61586517677428",
@@ -11,69 +12,270 @@
       "keyword": "Booxtore"
     },
     {
-      "keyword": "Confidence & Growth"
+      "keyword": "book reviews"
     },
     {
-      "keyword": "Fashion"
+      "keyword": "book recommendations"
     },
     {
-      "keyword": "Wellness"
+      "keyword": "best books"
     },
     {
-      "keyword": "Self Care"
+      "keyword": "reading lists"
     },
     {
-      "keyword": "Hair"
+      "keyword": "fiction books"
     },
     {
-      "keyword": "Beauty"
+      "keyword": "non-fiction books"
+    },
+    {
+      "keyword": "book guides"
+    },
+    {
+      "keyword": "author spotlights"
+    },
+    {
+      "keyword": "new book releases"
+    },
+    {
+      "keyword": "reading guides"
     }
   ],
-  "site_description": "Booxtore is a female-focused digital media platform dedicated to empowering women to lead confident, healthy, and stylish lives. We provide expert advice, inspiration, and resources on topics ranging from beauty and fashion to wellness and personal growth.",
-  "seo_meta_title": "",
-  "seo_meta_description": "",
-  "seo_meta_keywords": "",
+  "site_description": "Booxtore is your curated book discovery destination. We publish in-depth book reviews, expert recommendations, reading guides, and author spotlights to help you find your next great read. From fiction and non-fiction to self-help and business books, we cover it all.",
+  "seo_meta_title": "Booxtore - Book Reviews, Recommendations & Reading Guides",
+  "seo_meta_description": "Discover your next great read at Booxtore. In-depth book reviews, curated recommendations, reading guides, and author spotlights across all genres.",
+  "seo_meta_keywords": "book reviews, book recommendations, best books, reading lists, fiction, non-fiction, self-help books, business books, new releases, reading guides",
   "contact_address": "Kathmandu, Nepal",
   "contact_phonenumber": "+977 9840889975",
   "contact_email": "booxtore@gmail.com",
-  "posts_per_page": 9,
+  "posts_per_page": 12,
   "use_api_categories": false,
   "predefined_categories": [
     {
-      "id": 1,
-      "name": "Beauty",
-      "slug": "beauty"
+      "slug": "book-reviews",
+      "name": "Book Reviews",
+      "description": "In-depth reviews and critiques"
     },
     {
-      "id": 2,
-      "name": "Hair",
-      "slug": "hair"
+      "slug": "recommendations",
+      "name": "Recommendations",
+      "description": "Best books by topic, mood, or use case"
     },
     {
-      "id": 3,
-      "name": "Self Care",
-      "slug": "self-care"
+      "slug": "new-releases",
+      "name": "New Releases",
+      "description": "Latest book releases and trending titles"
     },
     {
-      "id": 4,
+      "slug": "author-spotlights",
+      "name": "Author Spotlights",
+      "description": "Author guides, interviews, and reading orders"
+    },
+    {
+      "slug": "reading-guides",
+      "name": "Reading Guides",
+      "description": "Reading orders, comparisons, and themed lists"
+    },
+    {
+      "slug": "romance",
+      "name": "Romance",
+      "description": "Love stories and romantic fiction"
+    },
+    {
+      "slug": "fantasy",
+      "name": "Fantasy",
+      "description": "Epic fantasy, urban fantasy, and magical worlds"
+    },
+    {
+      "slug": "sci-fi",
+      "name": "Sci-Fi",
+      "description": "Science fiction and speculative fiction"
+    },
+    {
+      "slug": "thriller",
+      "name": "Thriller",
+      "description": "Suspense, mystery, and crime fiction"
+    },
+    {
+      "slug": "literary-fiction",
+      "name": "Literary Fiction",
+      "description": "Character-driven and literary novels"
+    },
+    {
+      "slug": "horror",
+      "name": "Horror",
+      "description": "Horror, dark fiction, and supernatural"
+    },
+    {
+      "slug": "biography",
+      "name": "Biography",
+      "description": "Biographies and memoirs"
+    },
+    {
+      "slug": "history",
+      "name": "History",
+      "description": "Historical non-fiction and analysis"
+    },
+    {
+      "slug": "psychology",
+      "name": "Psychology",
+      "description": "Psychology and behavioral science"
+    },
+    {
+      "slug": "philosophy",
+      "name": "Philosophy",
+      "description": "Philosophy and critical thinking"
+    },
+    {
+      "slug": "self-help",
+      "name": "Self-Help",
+      "description": "Personal growth and self-improvement"
+    },
+    {
+      "slug": "productivity",
+      "name": "Productivity",
+      "description": "Time management and efficiency"
+    },
+    {
+      "slug": "business",
+      "name": "Business",
+      "description": "Business strategy and management"
+    },
+    {
+      "slug": "finance",
+      "name": "Finance",
+      "description": "Investing, money, and personal finance"
+    },
+    {
+      "slug": "entrepreneurship",
+      "name": "Entrepreneurship",
+      "description": "Startups and building businesses"
+    },
+    {
+      "slug": "tech",
+      "name": "Tech",
+      "description": "Technology and innovation"
+    },
+    {
+      "slug": "programming",
+      "name": "Programming",
+      "description": "Coding and software development"
+    },
+    {
+      "slug": "children",
+      "name": "Children",
+      "description": "Picture books and early readers"
+    },
+    {
+      "slug": "middle-grade",
+      "name": "Middle Grade",
+      "description": "Books for ages 8-12"
+    },
+    {
+      "slug": "young-adult",
+      "name": "Young Adult",
+      "description": "YA fiction and non-fiction"
+    },
+    {
+      "slug": "classics",
+      "name": "Classics",
+      "description": "Timeless literature"
+    },
+    {
+      "slug": "poetry",
+      "name": "Poetry",
+      "description": "Poetry collections and analysis"
+    },
+    {
+      "slug": "cooking",
+      "name": "Cooking",
+      "description": "Cookbooks and food writing"
+    },
+    {
+      "slug": "travel",
+      "name": "Travel",
+      "description": "Travel guides and memoirs"
+    },
+    {
+      "slug": "wellness",
       "name": "Wellness",
-      "slug": "wellness"
+      "description": "Health, fitness, and mindfulness"
     },
     {
-      "id": 5,
-      "name": "Fashion",
-      "slug": "fashion"
-    },
-    {
-      "id": 6,
-      "name": "Confidence & Growth",
-      "slug": "confidence-growth"
-    },
-    {
-      "id": 7,
-      "name": "Relationships",
-      "slug": "relationships"
+      "slug": "art",
+      "name": "Art",
+      "description": "Art, design, and creativity"
     }
+  ],
+  "navbar_groups": [
+    {
+      "label": "Reviews & Lists",
+      "items": [
+        "book-reviews",
+        "recommendations",
+        "new-releases",
+        "reading-guides",
+        "author-spotlights"
+      ]
+    },
+    {
+      "label": "Fiction",
+      "items": [
+        "romance",
+        "fantasy",
+        "sci-fi",
+        "thriller",
+        "literary-fiction",
+        "horror"
+      ]
+    },
+    {
+      "label": "Non-Fiction",
+      "items": [
+        "biography",
+        "history",
+        "psychology",
+        "philosophy"
+      ]
+    },
+    {
+      "label": "Growth & Business",
+      "items": [
+        "self-help",
+        "productivity",
+        "business",
+        "finance",
+        "entrepreneurship"
+      ]
+    },
+    {
+      "label": "Tech & Learning",
+      "items": [
+        "tech",
+        "programming"
+      ]
+    },
+    {
+      "label": "More",
+      "items": [
+        "children",
+        "middle-grade",
+        "young-adult",
+        "classics",
+        "poetry",
+        "cooking",
+        "travel",
+        "wellness",
+        "art"
+      ]
+    }
+  ],
+  "featured_categories": [
+    "book-reviews",
+    "recommendations",
+    "romance",
+    "new-releases"
   ],
   "podcast_cover_url": "https://res.cloudinary.com/yacloud/image/upload/v1614332851/ya-pod_gi1tmm.jpg",
   "mood_cover_url": "/images/mood/v5/mood-v5-cover.jpg"

@@ -1,50 +1,90 @@
 import {
   Box,
   Flex,
-  UnorderedList,
   Icon,
   useDisclosure,
   IconButton,
-  useToken,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Button,
+  HStack,
 } from "@chakra-ui/react"
-import { HiX as CloseIcon, HiMenu as MenuIcon } from "react-icons/hi"
+import { HiX as CloseIcon, HiMenu as MenuIcon, HiSearch } from "react-icons/hi"
+import { useRouter } from "next/router"
+import { useState } from "react"
 import Logo from "./Logo"
 import MobileNavbar from "./MobileNavbar"
-import NavItem from "./NavItem"
+import NavDropdown from "./NavDropdown"
 import AuthButton from "../auth/AuthButton"
-import { getNavigationLinks } from "src/constanst/routes"
-import { useGlobalContext } from "@/context"
 
-function DesktopNavbar() {
-  const { categories } = useGlobalContext()
-  const navigationLinks = getNavigationLinks(categories)
+function SearchBar() {
+  const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleSearch = e => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/article?search=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchQuery("")
+    }
+  }
 
   return (
     <Box
-      display={{ base: "none", md: "block" }}
-      transition="all 200ms ease-in-out"
-      flexBasis={{ base: "100%", md: "auto" }}
+      as="form"
+      onSubmit={handleSearch}
+      display={{ base: "none", lg: "block" }}
     >
-      <UnorderedList
-        display="flex"
-        alignItems="center"
-        justify={{ md: "space-between", lg: "flex-end" }}
-      >
-        {navigationLinks.map((r, i) => (
-          <NavItem key={i} to={r.to} isLast={i === navigationLinks.length - 1}>
-            {r.name}
-          </NavItem>
-        ))}
-      </UnorderedList>
+      <InputGroup size="sm" w="200px">
+        <InputLeftElement pointerEvents="none">
+          <Icon as={HiSearch} color="gray.400" />
+        </InputLeftElement>
+        <Input
+          placeholder="Search books..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          bg="white"
+          borderColor="gray.200"
+          borderRadius="full"
+          fontSize="sm"
+          _placeholder={{ color: "gray.400" }}
+          _focus={{
+            borderColor: "brand.primary",
+            boxShadow: "0 0 0 1px #8B4513",
+          }}
+        />
+      </InputGroup>
     </Box>
+  )
+}
+
+function EditorPicksCTA() {
+  return (
+    <Button
+      as="a"
+      href="/category/recommendations"
+      display={{ base: "none", lg: "flex" }}
+      size="sm"
+      bg="brand.primary"
+      color="white"
+      fontWeight="600"
+      fontSize="xs"
+      borderRadius="full"
+      px={4}
+      _hover={{
+        bg: "#7A3D11",
+        transform: "translateY(-1px)",
+      }}
+      transition="all 0.2s"
+    >
+      Editor&apos;s Picks
+    </Button>
   )
 }
 
 export default function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [white] = useToken("colors", ["white"])
-  const bgColor = `${white}E6`
-  const bgBlur = `${white}99`
 
   return (
     <Flex
@@ -54,10 +94,10 @@ export default function Header() {
       wrap="wrap"
       w="100%"
       mx="auto"
-      py={{ base: 3, lg: 6 }}
-      px={{ base: 6, md: 10 }}
-      bgColor={bgColor}
-      color="black"
+      py={{ base: 3, lg: 4 }}
+      px={{ base: 4, md: 8, lg: 12 }}
+      bgColor="rgba(253, 251, 247, 0.95)"
+      color="gray.800"
       className="header"
       pos="fixed"
       top={0}
@@ -65,43 +105,48 @@ export default function Header() {
       right={0}
       zIndex="10"
       borderBottom="1px solid"
-      borderBottomColor="gray.200"
+      borderBottomColor="gray.100"
       sx={{
         "@supports (backdrop-filter: saturate(180%) blur(20px))": {
           backdropFilter: "saturate(180%) blur(20px)",
-          bgColor: bgBlur,
+          bgColor: "rgba(253, 251, 247, 0.85)",
         },
         "@supports (-webkit-backdrop-filter: saturate(180%) blur(20px))": {
           WebkitBackdropFilter: "saturate(180%) blur(20px)",
-          bgColor: bgBlur,
+          bgColor: "rgba(253, 251, 247, 0.85)",
         },
       }}
       id="header-nav"
     >
-      {/* Hamburger menu */}
-
-      <IconButton
-        aria-label="Hamburger menu"
-        display={{ base: "block", md: "none" }}
-        marginRight={4}
-        variant="ghost"
-        onClick={onOpen}
-        icon={<Icon boxSize="1.5em" as={isOpen ? CloseIcon : MenuIcon} />}
-      />
-
-      <Box
-        position={{ base: "absolute", md: "static" }}
-        left={{ base: "50%", md: "unset" }}
-        transform={{ base: "translateX(-50%)", md: "unset" }}
-      >
-        <Logo />
-      </Box>
+      {/* Left section: Hamburger + Logo */}
+      <HStack spacing={3}>
+        <IconButton
+          aria-label="Hamburger menu"
+          display={{ base: "flex", md: "none" }}
+          variant="ghost"
+          onClick={onOpen}
+          size="sm"
+          icon={<Icon boxSize="1.25em" as={isOpen ? CloseIcon : MenuIcon} />}
+        />
+        <Logo size="md" />
+      </HStack>
 
       <MobileNavbar isOpen={isOpen} onClose={onClose} />
 
-      <DesktopNavbar />
+      {/* Center section: Navigation with dropdowns */}
+      <NavDropdown />
 
-      <AuthButton />
+      {/* Right section: Search + CTA + Auth */}
+      <HStack spacing={3} display={{ base: "none", md: "flex" }}>
+        <SearchBar />
+        <EditorPicksCTA />
+        <AuthButton />
+      </HStack>
+
+      {/* Mobile Auth */}
+      <Box display={{ base: "block", md: "none" }}>
+        <AuthButton />
+      </Box>
     </Flex>
   )
 }

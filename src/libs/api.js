@@ -142,17 +142,36 @@ export async function fetchByCategory(slug) {
 
   if (!category) return { articles: [], category: null }
 
+  // Use category_id for API query (as per API documentation)
+  // Note: category_id requires numeric ID, not slug
   const queryParams = new URLSearchParams({
-    category_id: category.id.toString(),
     status: "published",
     sort: "date",
     order: "desc",
   })
 
+  // Only add category_id if we have a numeric id from API categories
+  if (category.id) {
+    queryParams.append("category_id", category.id.toString())
+  }
+
   const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+  
+  // If using predefined categories (no ID), filter articles client-side by category slug/name
+  let articles = (data.articles || []).map(normalizeArticle)
+  
+  if (!category.id) {
+    // Client-side filtering for predefined categories
+    articles = articles.filter(article => {
+      const articleCategorySlug = article.category?.slug || 
+        (typeof article.category === 'string' ? article.category.toLowerCase().replace(/\s+/g, '-') : null)
+      return articleCategorySlug === slug
+    })
+  }
+
   return {
-    articles: (data.articles || []).map(normalizeArticle),
-    category: { name: category.name, slug: category.slug, id: category.id },
+    articles,
+    category: { name: category.name, slug: category.slug },
   }
 }
 
@@ -167,16 +186,40 @@ export async function fetchPaginated(page = 1, categorySlug = null) {
     return (data.articles || []).map(normalizeArticle)
   }
 
-  // Get category by slug first
+  // Get category ID from slug for proper API filtering
   const categories = await fetchCategories()
   const category = categories.find(cat => cat.slug === categorySlug)
 
-  if (!category) return []
+  if (!category) {
+    return []
+  }
 
-  const data = await fetchAPI(
-    `/api/v1/articles?category_id=${category.id}&status=published&limit=${limit}&offset=${offset}&sort=date&order=desc`
-  )
-  return (data.articles || []).map(normalizeArticle)
+  // Build query with category_id if available
+  const queryParams = new URLSearchParams({
+    status: "published",
+    limit: limit.toString(),
+    offset: offset.toString(),
+    sort: "date",
+    order: "desc",
+  })
+
+  if (category.id) {
+    queryParams.append("category_id", category.id.toString())
+  }
+
+  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+  let articles = (data.articles || []).map(normalizeArticle)
+
+  // Client-side filtering for predefined categories (no ID)
+  if (!category.id) {
+    articles = articles.filter(article => {
+      const articleCategorySlug = article.category?.slug || 
+        (typeof article.category === 'string' ? article.category.toLowerCase().replace(/\s+/g, '-') : null)
+      return articleCategorySlug === categorySlug
+    })
+  }
+
+  return articles
 }
 
 export async function fetchArticle(slug) {
@@ -263,7 +306,7 @@ export async function fetchCategorySlug() {
   return categories.map(cat => ({
     name: cat.name,
     slug: cat.slug,
-    id: cat.id,
+    description: cat.description || "",
   }))
 }
 

@@ -21,9 +21,12 @@ const ArticleLink = ({ children, href, ...restProps }) => (
   <ChakraLink
     href={href}
     fontWeight="normal"
-    fontSize={{ base: "sm", lg: "md" }}
-    color="brand.gray"
+    fontSize={{ base: "xs", lg: "sm" }}
+    color="gray.500"
     margin="0"
+    textTransform="uppercase"
+    letterSpacing="0.05em"
+    _hover={{ color: "brand.primary" }}
     {...restProps}
   >
     {children}
@@ -39,18 +42,28 @@ const Article = ({ article }) => {
         <Box
           mx={{ base: 4, md: 6, xl: 8 }}
           className="article"
-          mb={{ base: 10, md: 8, lg: 20 }}
+          mb={{ base: 10, md: 8, lg: 16 }}
           pos="relative"
           ref={ref}
+          bg="white"
+          borderRadius="lg"
+          overflow="hidden"
+          boxShadow="0 1px 3px rgba(0,0,0,0.05)"
+          transition="all 0.3s ease"
+          _hover={{
+            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+            transform: "translateY(-4px)",
+          }}
         >
           <Box
             w="100%"
-            minH={{ base: "200px", md: "250px", lg: "300px" }}
-            maxH={{ base: "400px", lg: "450px" }}
+            minH={{ base: "200px", md: "250px", lg: "280px" }}
+            maxH={{ base: "400px", lg: "400px" }}
             display="flex"
             alignItems="center"
             justifyContent="center"
-            bg="gray.50"
+            bg="brand.parchment"
+            overflow="hidden"
           >
             <Skeleton height="100%" width="100%" isLoaded={inView}>
               {inView && image_url && (
@@ -97,41 +110,47 @@ const Article = ({ article }) => {
               as={Link}
               href={ARTICLE_ID_ROUTE(slug)}
               className="article-title"
-              fontSize="xl"
+              fontSize={{ base: "lg", lg: "xl" }}
               fontWeight={600}
-              maxW="90%"
+              fontFamily="heading"
+              maxW="95%"
               mr="auto"
+              color="gray.800"
+              lineHeight="1.3"
               _hover={{
-                color: "brand.gray",
+                color: "brand.primary",
               }}
+              transition="color 0.2s ease"
             >
               {title}
             </Heading>
             {excerpt && (
               <Text
-                color="brand.gray"
-                fontSize={{ base: "0.8rem", lg: "1rem" }}
+                color="gray.600"
+                fontSize={{ base: "0.85rem", lg: "0.95rem" }}
                 mr="auto"
                 d="block"
                 w="full"
+                lineHeight="1.6"
               >
-                {excerptSplit.length <= 20
+                {excerptSplit.length <= 25
                   ? excerptSplit.join(" ")
-                  : `${excerptSplit.slice(0, 20).join(" ")}...`}
+                  : `${excerptSplit.slice(0, 25).join(" ")}...`}
               </Text>
             )}
             <Text
               as={Link}
               href={ARTICLE_ID_ROUTE(slug)}
-              color="blue.700"
+              color="brand.primary"
               className="article-link"
-              fontSize={{ base: "0.8rem", lg: "1rem" }}
+              fontSize={{ base: "0.8rem", lg: "0.9rem" }}
+              fontWeight="600"
               transitionDuration={"150ms"}
               _hover={{
-                color: "blue.700",
+                color: "brand.secondary",
               }}
             >
-              continue reading
+              Read More
               <ChevronRightIcon />
             </Text>
           </VStack>

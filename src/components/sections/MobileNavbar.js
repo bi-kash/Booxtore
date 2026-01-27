@@ -10,17 +10,51 @@ import {
   Link,
   UnorderedList,
   VStack,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Box,
+  Text,
 } from "@chakra-ui/react"
 import { AiOutlineInstagram } from "react-icons/ai"
+import NextLink from "next/link"
+import { useRouter } from "next/router"
 
-import MobileNavItem from "./MobileNavItem"
-import { getNavigationLinks } from "src/constanst/routes"
-import { useGlobalContext } from "@/context"
+import { CATEGORY_ID_ROUTE, HOME_ROUTE } from "src/constanst/routes"
 import config from "@/contents/site-settings.json"
 
+// Get category info by slug
+function getCategoryBySlug(slug) {
+  const categories = config.predefined_categories || []
+  return categories.find(cat => cat.slug === slug)
+}
+
+function MobileNavLink({ href, children, onClose }) {
+  const router = useRouter()
+  const isActive = router.asPath === href
+
+  return (
+    <Link
+      as={NextLink}
+      href={href}
+      onClick={onClose}
+      display="block"
+      py={2}
+      px={4}
+      fontSize="sm"
+      color={isActive ? "brand.primary" : "gray.700"}
+      fontWeight={isActive ? 600 : 400}
+      _hover={{ bg: "gray.50", color: "brand.primary" }}
+    >
+      {children}
+    </Link>
+  )
+}
+
 export default function MobileNavbar({ isOpen, onClose }) {
-  const { categories } = useGlobalContext()
-  const navigationLinks = getNavigationLinks(categories)
+  const navGroups = config.navbar_groups || []
   const siteName = config.site_name || config.site_title
 
   return (
@@ -32,14 +66,14 @@ export default function MobileNavbar({ isOpen, onClose }) {
       zIndex={12}
     >
       <DrawerOverlay />
-      <DrawerContent>
+      <DrawerContent bg="white">
         <DrawerHeader
-          py={5}
+          py={4}
           borderBottomWidth="1px"
-          borderBottomColor="gray.200"
+          borderBottomColor="gray.100"
         >
           <Flex alignItems="center">
-            <Heading size="md" fontWeight="medium">
+            <Heading size="md" fontWeight="600" color="gray.800">
               {siteName}
             </Heading>
           </Flex>
@@ -51,19 +85,54 @@ export default function MobileNavbar({ isOpen, onClose }) {
             justifyContent="space-between"
             height="full"
           >
-            <UnorderedList width={"full"}>
-              {navigationLinks.map((link, index, arr) => (
-                <MobileNavItem
-                  key={link.name}
-                  to={link.to}
-                  icon={link.icon}
-                  activeIcon={link.activeIcon}
-                  isLast={index === arr.length - 1}
-                >
-                  {link.name}
-                </MobileNavItem>
-              ))}
-            </UnorderedList>
+            <Box w="full">
+              {/* Home link */}
+              <Box borderBottom="1px solid" borderColor="gray.100">
+                <MobileNavLink href={HOME_ROUTE} onClose={onClose}>
+                  Home
+                </MobileNavLink>
+              </Box>
+
+              {/* Accordion groups */}
+              <Accordion allowMultiple>
+                {navGroups.map((group, index) => (
+                  <AccordionItem key={index} border="none">
+                    <AccordionButton
+                      py={3}
+                      px={4}
+                      _hover={{ bg: "gray.50" }}
+                      _expanded={{ bg: "gray.50" }}
+                    >
+                      <Text
+                        flex="1"
+                        textAlign="left"
+                        fontSize="sm"
+                        fontWeight="500"
+                        color="gray.700"
+                      >
+                        {group.label}
+                      </Text>
+                      <AccordionIcon color="gray.400" />
+                    </AccordionButton>
+                    <AccordionPanel pb={2} px={0} bg="gray.25">
+                      {group.items.map(slug => {
+                        const category = getCategoryBySlug(slug)
+                        if (!category) return null
+                        return (
+                          <MobileNavLink
+                            key={slug}
+                            href={CATEGORY_ID_ROUTE(slug)}
+                            onClose={onClose}
+                          >
+                            {category.name}
+                          </MobileNavLink>
+                        )
+                      })}
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </Box>
 
             <UnorderedList
               alignSelf="flex-end"
@@ -71,15 +140,19 @@ export default function MobileNavbar({ isOpen, onClose }) {
               px={6}
               pb={2}
               pt={3}
-              color="brand.gray"
+              color="gray.500"
               display="flex"
               alignItems="center"
               borderTop="1px solid"
-              borderTopColor="gray.300"
+              borderTopColor="gray.100"
+              fontSize="sm"
             >
-              <Icon marginRight={4} boxSize="1.2em" as={AiOutlineInstagram} />
-              <Link href="/redirect?url=https://instagram.com/ya.magz">
-                {siteName}
+              <Icon marginRight={3} boxSize="1.2em" as={AiOutlineInstagram} />
+              <Link
+                href={`/redirect?url=https://instagram.com/${config.instagram_account}`}
+                _hover={{ color: "brand.primary" }}
+              >
+                @{config.instagram_account}
               </Link>
             </UnorderedList>
           </VStack>
