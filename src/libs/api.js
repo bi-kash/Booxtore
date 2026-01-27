@@ -136,27 +136,25 @@ export async function fetchHero() {
 export async function fetchByCategory(slug) {
   if (!slug) return { articles: [], category: null }
 
-  try {
-    // Use dedicated category slug endpoint - handles filtering server-side
-    const queryParams = new URLSearchParams({
-      status: "published",
-      sort: "date",
-      order: "desc",
-    })
+  // Get the category metadata
+  const categories = await fetchCategories()
+  const category = categories.find(cat => cat.slug === slug)
 
-    const data = await fetchAPI(
-      `/api/v1/articles/category/${slug}?${queryParams}`
-    )
+  if (!category) return { articles: [], category: null }
 
-    return {
-      articles: (data.articles || []).map(normalizeArticle),
-      category: data.category
-        ? { name: data.category.name, slug: data.category.slug }
-        : null,
-    }
-  } catch (error) {
-    console.error("Error fetching category articles:", error)
-    return { articles: [], category: null }
+  // Use category_slug query parameter for server-side filtering
+  const queryParams = new URLSearchParams({
+    category_slug: slug,
+    status: "published",
+    sort: "date",
+    order: "desc",
+  })
+
+  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+
+  return {
+    articles: (data.articles || []).map(normalizeArticle),
+    category: { name: category.name, slug: category.slug },
   }
 }
 
@@ -172,21 +170,13 @@ export async function fetchPaginated(page = 1, categorySlug = null) {
     order: "desc",
   })
 
-  if (!categorySlug) {
-    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
-    return (data.articles || []).map(normalizeArticle)
+  // Add category_slug if filtering by category
+  if (categorySlug) {
+    queryParams.append("category_slug", categorySlug)
   }
 
-  // Use dedicated category slug endpoint - handles filtering server-side
-  try {
-    const data = await fetchAPI(
-      `/api/v1/articles/category/${categorySlug}?${queryParams}`
-    )
-    return (data.articles || []).map(normalizeArticle)
-  } catch (error) {
-    console.error("Error fetching paginated category articles:", error)
-    return []
-  }
+  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+  return (data.articles || []).map(normalizeArticle)
 }
 
 export async function fetchArticle(slug) {
