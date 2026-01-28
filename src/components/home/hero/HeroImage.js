@@ -12,12 +12,14 @@ export default function HeroImage({ url, alt }) {
       transitionProperty="opacity"
       transitionDuration="300ms"
       width={{ base: "full", md: "30vw", lg: "35vw" }}
+      bg="gray.50"
+      p={2}
     >
       <Image
         src={url}
         alt={alt}
         fill
-        style={{ objectFit: "cover", objectPosition: "center" }}
+        style={{ objectFit: "contain", objectPosition: "center" }}
         quality={70}
       />
     </Flex>

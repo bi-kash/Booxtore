@@ -57,20 +57,25 @@ const Article = ({ article }) => {
         >
           <Box
             w="100%"
-            minH={{ base: "200px", md: "250px", lg: "280px" }}
-            maxH={{ base: "400px", lg: "400px" }}
+            minH={{ base: "200px", md: "220px", lg: "250px" }}
             display="flex"
             alignItems="center"
             justifyContent="center"
             bg="brand.parchment"
-            overflow="hidden"
+            position="relative"
+            p={3}
           >
             <Skeleton height="100%" width="100%" isLoaded={inView}>
               {inView && image_url && (
                 <Image
                   width={500}
-                  height={350}
-                  objectFit="contain"
+                  height={500}
+                  style={{
+                    objectFit: "contain",
+                    width: "100%",
+                    height: "auto",
+                    maxHeight: "280px",
+                  }}
                   src={image_url}
                   alt={title}
                   quality={50}
