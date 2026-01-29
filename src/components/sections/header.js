@@ -41,7 +41,7 @@ function SearchBar() {
           <Icon as={HiSearch} color="gray.400" />
         </InputLeftElement>
         <Input
-          placeholder="Search books..."
+          placeholder="Search"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           bg="white"

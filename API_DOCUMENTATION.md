@@ -13,6 +13,7 @@ Complete REST API reference for PopArticle content generation platform.
 - [Profile Management](#profile-management)
 - [Message/Contact Endpoints](#messagecontact-endpoints)
 - [Article Endpoints](#article-endpoints)
+  - [Search Articles](#search-articles)
 - [Category Endpoints](#category-endpoints)
 - [Comment Endpoints](#comment-endpoints)
 - [Team Management](#team-management)
@@ -902,7 +903,9 @@ Use this dedicated endpoint when the frontend only knows the category slug (SEO-
   "per_page": 10,
   "sort_by": "popularity",
   "sort_order": "desc",
-  "articles": [ /* same article objects as List Articles */ ]
+  "articles": [
+    /* same article objects as List Articles */
+  ]
 }
 ```
 
@@ -910,7 +913,6 @@ Use this dedicated endpoint when the frontend only knows the category slug (SEO-
 
 - Respects `X-Tenant-ID`; returns tenant-specific + global articles when tenant present.
 - Returns `404` if category slug does not exist for the tenant scope.
-
 
 ---
 
@@ -1093,46 +1095,149 @@ GET /api/v1/articles/search
 X-Tenant-ID: <tenant_id> (optional)
 ```
 
+**Description:**
+Advanced full-text search across articles with support for filtering, sorting by relevance, and searching within specific fields. Results include highlighted snippets showing where matches were found.
+
 **Query Parameters:**
 
-- `q` (required): Search query
-- `limit` (optional): Default 20, max 100
-- `sort` (optional): `relevance` (default), `date`, `popularity`, `trending`, `title`, `comments`
-- `order` (optional): `desc` (default), `asc`
+| Parameter            | Type    | Required | Default       | Description                                                 |
+| -------------------- | ------- | -------- | ------------- | ----------------------------------------------------------- |
+| `q`                  | string  | Yes      | -             | Search query (2-200 characters)                             |
+| `limit` / `per_page` | integer | No       | 20            | Results per page (max 100)                                  |
+| `offset`             | integer | No       | 0             | Number of results to skip                                   |
+| `page`               | integer | No       | 1             | Page number (alternative to offset)                         |
+| `status`             | string  | No       | `published`\* | Filter by status: `draft`, `published`, `archived`          |
+| `category_id`        | integer | No       | -             | Filter by category ID                                       |
+| `category_slug`      | string  | No       | -             | Filter by category slug (alternative to category_id)        |
+| `is_featured`        | boolean | No       | -             | Filter featured articles: `true` / `false`                  |
+| `date_from`          | string  | No       | -             | Filter by creation date (ISO 8601: `YYYY-MM-DD`)            |
+| `date_to`            | string  | No       | -             | Filter by creation date (ISO 8601: `YYYY-MM-DD`)            |
+| `sort`               | string  | No       | `relevance`   | Sort by: `relevance`, `date`, `popularity`, `title`         |
+| `order`              | string  | No       | `desc`        | Sort order: `asc`, `desc`                                   |
+| `search_in`          | string  | No       | `all`         | Search scope: `all`, `title`, `content`, `tags`, `keywords` |
+
+\* Non-authenticated users can only search published articles
+
+**Example Request:**
+
+```http
+GET /api/v1/articles/search?q=artificial%20intelligence&sort=relevance&limit=10&status=published&search_in=all
+```
 
 **Response (200):**
 
 ```json
 {
   "query": "artificial intelligence",
-  "total": 5,
+  "total": 15,
+  "limit": 10,
+  "offset": 0,
+  "page": 1,
+  "per_page": 10,
+  "total_pages": 2,
+  "has_next": true,
+  "has_prev": false,
   "sort_by": "relevance",
   "sort_order": "desc",
-  "results": [
+  "search_in": "all",
+  "filters": {
+    "status": "published",
+    "category_id": null,
+    "is_featured": null,
+    "date_from": null,
+    "date_to": null
+  },
+  "articles": [
     {
       "id": 1,
-      "title": "Article Title",
-      "slug": "article-title",
-      "excerpt": "Brief summary...",
+      "title": "The Future of Artificial Intelligence",
+      "slug": "the-future-of-artificial-intelligence",
+      "excerpt": "Explore the cutting-edge developments in AI...",
+      "highlight": "...the rapid advancement of **artificial intelligence** is transforming industries...",
       "image": "https://your-cdn.cloudfront.net/articles/123/main/abc123.jpg",
-      "category": "Technology",
+      "category": {
+        "id": 1,
+        "name": "Technology",
+        "slug": "technology"
+      },
       "status": "published",
-      "is_featured": false,
-      "view_count": 150,
-      "comment_count": 8,
-      "created_at": "2025-01-01T00:00:00.000000",
-      "published_at": "2025-01-01T13:00:00.000000"
+      "is_featured": true,
+      "view_count": 1250,
+      "comment_count": 23,
+      "tenant_id": "550e8400-e29b-41d4-a716-446655440000",
+      "tags": ["AI", "Machine Learning", "Technology"],
+      "keywords": [
+        "artificial intelligence",
+        "neural networks",
+        "deep learning"
+      ],
+      "created_at": "2025-01-15T10:30:00.000000",
+      "updated_at": "2025-01-20T14:00:00.000000",
+      "published_at": "2025-01-15T12:00:00.000000"
     }
   ]
 }
 ```
 
+**Error Response (400):**
+
+```json
+{
+  "error": "Search query is required",
+  "message": "Please provide a search term using the \"q\" parameter"
+}
+```
+
+```json
+{
+  "error": "Search query too short",
+  "message": "Search query must be at least 2 characters"
+}
+```
+
+**Relevance Scoring:**
+
+When `sort=relevance`, results are ranked by:
+
+1. **100 points**: Exact title match
+2. **80 points**: Title starts with query
+3. **60 points**: Title contains query
+4. **40 points**: Excerpt contains query
+5. **20 points**: Content or other fields contain query
+
+**Search Scopes:**
+
+| Scope      | Description                                          |
+| ---------- | ---------------------------------------------------- |
+| `all`      | Searches title, content, excerpt, tags, and keywords |
+| `title`    | Searches only in article titles                      |
+| `content`  | Searches in content and excerpt                      |
+| `tags`     | Searches only in associated tags                     |
+| `keywords` | Searches only in associated keywords                 |
+
+**Highlight Field:**
+
+The `highlight` field contains a snippet from the article (excerpt or content) showing where the search term was found, with approximately 50 characters before and 150 characters after the match. This is useful for displaying search results with context.
+
 **Notes:**
 
-- Supports advanced sorting and pagination
-- `comment_count` and `view_count` are always included
-- `sort_by` and `sort_order` reflect the applied sorting
-- Only searches published articles for non-authenticated users
+- Minimum query length: 2 characters
+- Maximum query length: 200 characters
+- Maximum results per page: 100
+- Results are cached for a short duration to improve performance
+- Non-authenticated users can only search `published` articles
+- With `X-Tenant-ID`: Returns tenant articles + global articles (tenant_id=NULL)
+- Without `X-Tenant-ID`: Returns only global articles
+- The search is case-insensitive
+- Supports partial matches (e.g., "intell" matches "intelligence")
+
+**Best Practices:**
+
+1. **For blog search bars**: Use `search_in=all` with `sort=relevance`
+2. **For tag-based filtering**: Use `search_in=tags` to find articles by topic
+3. **For SEO keyword analysis**: Use `search_in=keywords`
+4. **For date-ranged searches**: Combine `date_from` and `date_to` for time-based queries
+5. **For infinite scroll**: Use `offset` pagination; for page numbers, use `page` parameter
 
 ---
 
@@ -1222,7 +1327,6 @@ Fetch a category by its human-readable `slug`. This endpoint mirrors `GET /api/v
 
 - Returns `404` if slug not found within the resolved tenant/global scope.
 - Useful for frontend routing and SEO-friendly category pages.
-
 
 ### Create Category
 

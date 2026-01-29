@@ -337,6 +337,63 @@ export async function fetchFullTeam() {
   return await fetchTeamMembers(false)
 }
 
+// Search Articles
+export async function searchArticles(params = {}) {
+  try {
+    const {
+      q,
+      limit = 20,
+      offset = 0,
+      page,
+      status = "published",
+      category_id,
+      category_slug,
+      is_featured,
+      date_from,
+      date_to,
+      sort = "relevance",
+      order = "desc",
+      search_in = "all",
+    } = params
+
+    const queryParams = new URLSearchParams()
+
+    if (q) queryParams.append("q", q)
+    queryParams.append("limit", limit.toString())
+
+    if (page) {
+      queryParams.append("page", page.toString())
+    } else {
+      queryParams.append("offset", offset.toString())
+    }
+
+    if (status) queryParams.append("status", status)
+    if (category_id) queryParams.append("category_id", category_id.toString())
+    if (category_slug) queryParams.append("category_slug", category_slug)
+    if (is_featured !== undefined)
+      queryParams.append("is_featured", is_featured.toString())
+    if (date_from) queryParams.append("date_from", date_from)
+    if (date_to) queryParams.append("date_to", date_to)
+    if (sort) queryParams.append("sort", sort)
+    if (order) queryParams.append("order", order)
+    if (search_in) queryParams.append("search_in", search_in)
+
+    const data = await fetchAPI(`/api/v1/articles/search?${queryParams}`)
+
+    return {
+      ...data,
+      articles: (data.articles || []).map(normalizeArticle),
+    }
+  } catch (error) {
+    console.error("Error searching articles:", error)
+    return {
+      articles: [],
+      total: 0,
+      query: params.q || "",
+    }
+  }
+}
+
 // Track article view
 export async function trackArticleView(articleId) {
   if (!articleId) return
