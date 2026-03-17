@@ -172,8 +172,19 @@ export default function Footer() {
   const toast = useToast()
   const toastRef = useRef()
   const siteName = config.site_name || config.site_title
+  // Extract domain (hostname) from configured base_url
+  const extractDomain = url => {
+    if (!url) return ""
+    try {
+      return new URL(url).hostname
+    } catch (e) {
+      return url.replace(/^https?:\/\//, "").split("/")[0]
+    }
+  }
+  const domainToCheck = extractDomain(config.base_url)
   // Ensure deterministic categories for SSR hydration: use predefined categories
   // when global context has no categories yet (initial server/client render).
+  const tagline = config.tagline || ""
   const displayCategories =
     categories && categories.length > 0
       ? categories
@@ -276,8 +287,45 @@ export default function Footer() {
         >
           <Logo size="lg" />
           <Text fontSize="sm" color="gray.600" maxW="280px" lineHeight="1.6">
-            Your curated book discovery destination. Find your next great read.
+            {tagline}
           </Text>
+          <Box
+            borderLeft="4px solid"
+            borderColor="brand.primary"
+            pl={4}
+            py={3}
+            pr={3}
+            bg="gray.100"
+            borderRadius="md"
+          >
+            <Heading size="sm" mb={2} color="gray.800">
+              Domain For Sale 🌐
+            </Heading>
+            <Text fontSize="sm" color="gray.700" mb={2}>
+              This domain is available for purchase. Interested in buying?
+            </Text>
+            <VStack align="flex-start" spacing={2} fontSize="sm">
+              <ChakraLink
+                href={`https://www.godaddy.com/en-in/domainsearch/find?domainToCheck=${
+                  domainToCheck || siteName
+                }`}
+                isExternal
+                rel="noopener"
+                color="brand.primary"
+                fontWeight="600"
+                _hover={{ textDecoration: "underline" }}
+              >
+                → Click here to buy on GoDaddy
+              </ChakraLink>
+              <Text color="gray.600">
+                📧 Message me for negotiation or custom offers
+              </Text>
+              <Text color="gray.600" fontSize="xs" fontStyle="italic">
+                💰 <strong>Special Offer:</strong> Get 10% discount if you use
+                escrow.com for secure payment. Message me for details!
+              </Text>
+            </VStack>
+          </Box>
           <HStack
             spacing={1}
             align="center"
