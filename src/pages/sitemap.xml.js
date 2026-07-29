@@ -1,5 +1,6 @@
 import { fetchArticles } from "@/libs/api"
 import { fetchCategories } from "@/libs/api"
+import { GOOGLE_BOOKS_GENRES } from "@/libs/googleBooks"
 import siteSettings from "@/contents/site-settings.json"
 
 function generateSiteMap(articles, categories, baseUrl) {
@@ -33,6 +34,22 @@ function generateSiteMap(articles, categories, baseUrl) {
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
   </url>
+  <url>
+    <loc>${baseUrl}/store</loc>
+    <priority>0.8</priority>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  ${GOOGLE_BOOKS_GENRES.filter(genre => genre.key !== "all")
+    .map(
+      genre => `  <url>
+    <loc>${baseUrl}/store/${genre.key}</loc>
+    <priority>0.75</priority>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+  </url>`
+    )
+    .join("\n")}
   <url>
     <loc>${baseUrl}/privacy-policy</loc>
     <priority>0.5</priority>

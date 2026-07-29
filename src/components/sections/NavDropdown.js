@@ -11,7 +11,7 @@ import {
 import { HiChevronDown } from "react-icons/hi"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { CATEGORY_ID_ROUTE } from "src/constanst/routes"
+import { CATEGORY_ID_ROUTE, STORE_ROUTE } from "src/constanst/routes"
 import config from "@/contents/site-settings.json"
 
 // Get category info by slug
@@ -91,6 +91,7 @@ function NavDropdownGroup({ group }) {
 
 // Desktop navbar with dropdowns
 export default function NavDropdown() {
+  const router = useRouter()
   const navGroups = config.navbar_groups || []
 
   return (
@@ -108,6 +109,20 @@ export default function NavDropdown() {
         transition="color 0.2s"
       >
         Home
+      </Box>
+
+      <Box
+        as={Link}
+        href={STORE_ROUTE}
+        px={3}
+        py={2}
+        fontSize="sm"
+        fontWeight={router.asPath === STORE_ROUTE ? 600 : 400}
+        color={router.asPath === STORE_ROUTE ? "gray.900" : "gray.600"}
+        _hover={{ color: "gray.900" }}
+        transition="color 0.2s"
+      >
+        Store
       </Box>
 
       {/* Dropdown groups */}

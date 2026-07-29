@@ -393,6 +393,7 @@ export default function Footer() {
           <VStack align={{ base: "flex-start" }} spacing={4}>
             <FooterTitle>COMPANY</FooterTitle>
             <FooterLink path="/about-us">About Us</FooterLink>
+            <FooterLink path="/store">Book Store</FooterLink>
             <FooterLink path="/authors">Our Authors</FooterLink>
             <FooterLink path="/privacy-policy">Privacy Policy</FooterLink>
             <FooterLink path="/terms-of-service">Terms of Service</FooterLink>

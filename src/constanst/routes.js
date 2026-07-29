@@ -3,6 +3,7 @@ import { BiCategory } from "react-icons/bi"
 
 export const HOME_ROUTE = "/"
 export const ARTICLE_ROUTE = "/article"
+export const STORE_ROUTE = "/store"
 export const MAGAZINE_ROUTE = "/magazine"
 export const GALLERY_ROUTE = "/gallery"
 export const ENTERTAINMENT_ROUTE = "/entertainment"
@@ -53,6 +54,7 @@ export const navigationLinks = [
 // Footer links - organized for a book-focused site
 export const footerLinks = [
   { name: "Home", path: HOME_ROUTE },
+  { name: "Store", path: STORE_ROUTE },
   { name: "All Articles", path: ARTICLE_ROUTE },
   { name: "Book Reviews", path: CATEGORY_ID_ROUTE("book-reviews") },
   { name: "Recommendations", path: CATEGORY_ID_ROUTE("recommendations") },

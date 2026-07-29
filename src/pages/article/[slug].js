@@ -23,11 +23,10 @@ import { FiUser } from "react-icons/fi"
 import ArticleMeta from "@/components/meta/ArticleMeta"
 import config from "@/contents/site-settings.json"
 import { fetchArticle, fetchArticleSlugs } from "@/libs/api"
+import { buildBookshopUrl } from "@/libs/bookshop"
 import markdownToHtml from "@/libs/markdownToHTML"
 import { formatDate } from "@/libs/date"
 import { ARTICLE_ID_ROUTE } from "src/constanst/routes"
-
-const BOOKSHOP_BASE_URL = "https://bookshop.org/a/121771"
 
 function extractIsbn(value) {
   if (!value) return null
@@ -84,7 +83,7 @@ function extractIsbn(value) {
 
 function getBookshopUrl(keywords) {
   const isbn = extractIsbn(keywords)
-  return isbn ? `${BOOKSHOP_BASE_URL}/${isbn}` : null
+  return buildBookshopUrl(isbn)
 }
 
 export default function Article({ article }) {
@@ -250,7 +249,7 @@ export default function Article({ article }) {
             </Stack>
             <ArticleCoverImage featuredImage={image_url} alt={title} />
             {bookshopUrl && (
-              <Flex justify="center" mt={6}>
+              <Flex justify="center" mt={6} direction="column" align="center">
                 <Button
                   as="a"
                   href={bookshopUrl}
@@ -258,10 +257,21 @@ export default function Article({ article }) {
                   rel="noopener noreferrer"
                   variant="primary"
                   size="lg"
-                  minW="220px"
+                  minW="260px"
                 >
-                  Buy Now
+                  Buy & Support Local Bookstores
                 </Button>
+                <Text
+                  mt={2}
+                  fontSize="sm"
+                  color="brand.gray"
+                  textAlign="center"
+                  maxW="460px"
+                >
+                  Prices can sometimes be lower on bigger marketplaces, but this
+                  link helps independent bookstores and local reading
+                  communities.
+                </Text>
               </Flex>
             )}
           </header>

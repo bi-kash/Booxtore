@@ -22,7 +22,11 @@ import { AiOutlineInstagram } from "react-icons/ai"
 import NextLink from "next/link"
 import { useRouter } from "next/router"
 
-import { CATEGORY_ID_ROUTE, HOME_ROUTE } from "src/constanst/routes"
+import {
+  CATEGORY_ID_ROUTE,
+  HOME_ROUTE,
+  STORE_ROUTE,
+} from "src/constanst/routes"
 import config from "@/contents/site-settings.json"
 
 // Get category info by slug
@@ -90,6 +94,11 @@ export default function MobileNavbar({ isOpen, onClose }) {
               <Box borderBottom="1px solid" borderColor="gray.100">
                 <MobileNavLink href={HOME_ROUTE} onClose={onClose}>
                   Home
+                </MobileNavLink>
+              </Box>
+              <Box borderBottom="1px solid" borderColor="gray.100">
+                <MobileNavLink href={STORE_ROUTE} onClose={onClose}>
+                  Store
                 </MobileNavLink>
               </Box>
 
