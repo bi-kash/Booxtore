@@ -2,22 +2,21 @@ import { extendTheme, theme as chakraTheme } from "@chakra-ui/react"
 
 const theme = extendTheme({
   fonts: {
-    heading: "'Playfair Display', Georgia, serif",
-    body: "'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif",
-    serif: "'Playfair Display', Georgia, serif",
+    heading: "'Cormorant Garamond', Georgia, serif",
+    body: "'Karla', -apple-system, BlinkMacSystemFont, sans-serif",
+    serif: "'Lora', Georgia, serif",
     mono: "'JetBrains Mono', 'Fira Code', monospace",
   },
   colors: {
     brand: {
-      // Warm, bookish color palette
-      primary: "#8B4513", // Saddle brown - leather book binding
-      secondary: "#2F4F4F", // Dark slate - sophisticated ink
-      accent: "#DAA520", // Goldenrod - bookplate gold
-      cream: "#FDFBF7", // Off-white - aged paper
-      parchment: "#F5F1E8", // Parchment - reading background
-      ink: "#1F2937", // Dark ink for text
-      gray: "#6B7280",
-      lightGray: "#9CA3AF",
+      primary: "#0F4C5C",
+      secondary: "#1B263B",
+      accent: "#C0843D",
+      cream: "#FCFAF5",
+      parchment: "#F2EEE4",
+      ink: "#1A2333",
+      gray: "#5F6B7A",
+      lightGray: "#99A3AF",
     },
   },
   breakpoints: {
@@ -37,7 +36,7 @@ const theme = extendTheme({
         primary: {
           bg: "brand.primary",
           color: "white",
-          _hover: { bg: "#7A3D11", transform: "translateY(-1px)" },
+          _hover: { bg: "#0B3C49", transform: "translateY(-1px)" },
         },
         outline: {
           borderColor: "brand.primary",
@@ -70,29 +69,29 @@ const theme = extendTheme({
     global: {
       "::selection": {
         color: "white",
-        background: "#8B4513",
+        background: "#0F4C5C",
       },
       "::-webkit-scrollbar": {
         width: "0.5em",
       },
       "::-webkit-scrollbar-track": {
-        background: "#F5F1E8",
+        background: "#F2EEE4",
       },
       "::-webkit-scrollbar-thumb": {
         transition: "150ms all ease-in-out",
-        bgColor: "#D4C4A8",
+        bgColor: "#B9C3CE",
         borderRadius: "full",
       },
       "::-webkit-scrollbar-thumb:hover": {
-        background: "#B8A88A",
+        background: "#99A3AF",
       },
       html: {
         scrollBehavour: "smooth",
       },
       "html, body": {
         overflowX: "hidden",
-        backgroundColor: "#FDFBF7", // Cream background for reading comfort
-        color: "#1F2937",
+        backgroundColor: "#FCFAF5",
+        color: "#1A2333",
         fontSize: "16px",
         lineHeight: "1.7",
       },
@@ -104,27 +103,29 @@ const theme = extendTheme({
           marginBottom: 4,
         },
         a: {
-          color: "#8B4513",
+          color: "#0F4C5C",
           fontWeight: "500",
           _hover: {
             textDecoration: "underline",
-            color: "#6B3410",
+            color: "#1B263B",
           },
         },
         p: {
+          fontFamily: "'Lora', Georgia, serif",
           lineHeight: "1.8",
           marginY: 6,
           fontSize: "lg",
-          color: "#374151",
+          color: "#2A3343",
+          letterSpacing: "0.01em",
         },
         "h1, h2, h3, h4, h5, h6": {
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
           fontWeight: 700,
           marginTop: 8,
           marginBottom: 4,
           textOverflow: "ellipsis",
           lineHeight: "1.3",
-          color: "#1F2937",
+          color: "#1A2333",
         },
         h1: {
           fontSize: "4xl",
@@ -150,8 +151,8 @@ const theme = extendTheme({
           my: 6,
           pos: "relative",
           fontStyle: "italic",
-          color: "#4B5563",
-          bg: "#F9F7F3",
+          color: "#425063",
+          bg: "#F3F6F9",
           borderRadius: "md",
           _before: {
             content: "''",
@@ -161,7 +162,7 @@ const theme = extendTheme({
             left: 0,
             bottom: 0,
             width: "4px",
-            bgColor: "#8B4513",
+            bgColor: "#0F4C5C",
             borderRadius: "full",
           },
         },
@@ -172,15 +173,15 @@ const theme = extendTheme({
           borderRadius: "md",
           overflow: "hidden",
           thead: {
-            background: "#F5F1E8",
+            background: "#EAF0F5",
           },
           th: {
             fontWeight: 600,
-            color: "#1F2937",
+            color: "#1A2333",
           },
           "th, td": {
             padding: "0.75em 1em",
-            border: "1px solid #E5E1D8",
+            border: "1px solid #D7E0E9",
           },
         },
         "ol, ul": {
@@ -198,7 +199,7 @@ const theme = extendTheme({
         pointerEvents: "none",
       },
       "#nprogress .bar": {
-        background: "#8B4513",
+        background: "#0F4C5C",
         pos: "fixed",
         zIndex: 99999,
         top: 0,

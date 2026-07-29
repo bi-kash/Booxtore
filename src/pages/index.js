@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic"
+import { Box } from "@chakra-ui/react"
 import Layout from "@/components/layout"
 import Hero from "@/components/home/hero/index"
 import HomeTeam from "@/components/team/HomeTeam"
@@ -23,7 +24,12 @@ export default function Home({
   return (
     <Layout>
       <Meta url="/" />
-      <main>
+      <Box
+        as="main"
+        bg="radial-gradient(circle at 15% 10%, rgba(15, 76, 92, 0.07), transparent 35%), radial-gradient(circle at 85% 20%, rgba(192, 132, 61, 0.08), transparent 30%), #fcfaf5"
+        pt={{ base: 2, md: 4 }}
+        pb={{ base: 8, md: 12 }}
+      >
         {heroArticle && <Hero article={heroArticle} />}
         {homeArticles.length > 6 && (
           <ArticleList articles={homeArticles.slice(0, 6)} />
@@ -53,7 +59,7 @@ export default function Home({
         )}
         {/* <HomeEntertainment />
         <HomeTeam managerialTeams={managerialTeams} /> */}
-      </main>
+      </Box>
     </Layout>
   )
 }

@@ -7,7 +7,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Button,
   HStack,
 } from "@chakra-ui/react"
 import { HiX as CloseIcon, HiMenu as MenuIcon, HiSearch } from "react-icons/hi"
@@ -56,30 +55,6 @@ function SearchBar() {
         />
       </InputGroup>
     </Box>
-  )
-}
-
-function EditorPicksCTA() {
-  return (
-    <Button
-      as="a"
-      href="/category/recommendations"
-      display={{ base: "none", lg: "flex" }}
-      size="sm"
-      bg="brand.primary"
-      color="white"
-      fontWeight="600"
-      fontSize="xs"
-      borderRadius="full"
-      px={4}
-      _hover={{
-        bg: "#7A3D11",
-        transform: "translateY(-1px)",
-      }}
-      transition="all 0.2s"
-    >
-      Editor&apos;s Picks
-    </Button>
   )
 }
 
@@ -136,10 +111,9 @@ export default function Header() {
       {/* Center section: Navigation with dropdowns */}
       <NavDropdown />
 
-      {/* Right section: Search + CTA + Auth */}
+      {/* Right section: Search + Auth */}
       <HStack spacing={3} display={{ base: "none", md: "flex" }}>
         <SearchBar />
-        <EditorPicksCTA />
         <AuthButton />
       </HStack>
 

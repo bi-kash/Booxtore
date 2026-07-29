@@ -16,7 +16,7 @@ import Meta from "@/components/meta"
 const Comment = dynamic(() => import("@/components/comment"))
 
 // Library Components
-import { Avatar, Icon, Stack, Text } from "@chakra-ui/react"
+import { Avatar, Button, Flex, Icon, Stack, Text } from "@chakra-ui/react"
 import { FiUser } from "react-icons/fi"
 
 // Libs
@@ -27,10 +27,79 @@ import markdownToHtml from "@/libs/markdownToHTML"
 import { formatDate } from "@/libs/date"
 import { ARTICLE_ID_ROUTE } from "src/constanst/routes"
 
+const BOOKSHOP_BASE_URL = "https://bookshop.org/a/121771"
+
+function extractIsbn(value) {
+  if (!value) return null
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const isbn = extractIsbn(item)
+      if (isbn) return isbn
+    }
+    return null
+  }
+
+  if (typeof value === "object") {
+    const prioritizedKeys = ["isbn", "isbn_number"]
+
+    for (const key of prioritizedKeys) {
+      if (value[key]) {
+        const isbn = extractIsbn(value[key])
+        if (isbn) return isbn
+      }
+    }
+
+    for (const nestedValue of Object.values(value)) {
+      const isbn = extractIsbn(nestedValue)
+      if (isbn) return isbn
+    }
+
+    return null
+  }
+
+  const rawValue = String(value).trim()
+  if (!rawValue) return null
+
+  const normalizedDigits = rawValue.replace(/[^0-9Xx]/g, "").toUpperCase()
+
+  if (normalizedDigits.length === 10 || normalizedDigits.length === 13) {
+    return normalizedDigits
+  }
+
+  const isbnKeywordMatch = rawValue.match(/isbn(?:[_\s-]?number)?/i)
+  if (!isbnKeywordMatch) return null
+
+  const trailingDigits = rawValue
+    .slice(isbnKeywordMatch.index + isbnKeywordMatch[0].length)
+    .replace(/[^0-9Xx]/g, "")
+    .toUpperCase()
+
+  if (trailingDigits.length === 10 || trailingDigits.length === 13) {
+    return trailingDigits
+  }
+
+  return null
+}
+
+function getBookshopUrl(keywords) {
+  const isbn = extractIsbn(keywords)
+  return isbn ? `${BOOKSHOP_BASE_URL}/${isbn}` : null
+}
+
 export default function Article({ article }) {
   const [comments, setComments] = useState([])
-  const { title, slug, excerpt, date, category, authors, image_url, content } =
-    article
+  const {
+    title,
+    slug,
+    excerpt,
+    date,
+    category,
+    authors,
+    image_url,
+    content,
+    keywords,
+  } = article
 
   const { ref, inView } = useInView({
     rootMargin: "50px 0px",
@@ -116,6 +185,7 @@ export default function Article({ article }) {
   const fullUrl = `${config.base_url}${ARTICLE_ID_ROUTE(slug)}`
   const readTime = content && readingTime(content)
   const datePublised = new Date(date)
+  const bookshopUrl = getBookshopUrl(keywords)
   const authorsMeta = authors.reduce((all, author, index) => {
     let sep = index < authors.length - 1
     return all + author.name + (sep ? ", " : "")
@@ -179,6 +249,21 @@ export default function Article({ article }) {
               </Text>
             </Stack>
             <ArticleCoverImage featuredImage={image_url} alt={title} />
+            {bookshopUrl && (
+              <Flex justify="center" mt={6}>
+                <Button
+                  as="a"
+                  href={bookshopUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="primary"
+                  size="lg"
+                  minW="220px"
+                >
+                  Buy Now
+                </Button>
+              </Flex>
+            )}
           </header>
           <ArticleBody body={content} />
           <ArticleShare url={fullUrl} />

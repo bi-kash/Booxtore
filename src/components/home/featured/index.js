@@ -23,13 +23,16 @@ export default function FeaturedArticle({ article, reverse, btnColor }) {
             ref={ref}
             height="full"
             width="full"
-            backgroundColor="gray.50"
+            background="linear-gradient(140deg, #f4f0e6 0%, #eef5f8 100%)"
             flexDirection={{
               base: "column",
               lg: reverse ? "row-reverse" : "row",
             }}
             border="1px solid"
-            borderColor="gray.100"
+            borderColor="rgba(15, 76, 92, 0.14)"
+            borderRadius="2xl"
+            boxShadow="0 12px 30px rgba(16, 33, 58, 0.08)"
+            overflow="hidden"
             position="relative"
             marginY={{ md: 10 }}
           >
@@ -43,7 +46,7 @@ export default function FeaturedArticle({ article, reverse, btnColor }) {
               display="flex"
               alignItems="center"
               justifyContent="center"
-              bg="gray.50"
+              bg="rgba(15, 76, 92, 0.05)"
             >
               <Skeleton height="100%" width="100%" isLoaded={inView}>
                 {inView && (
@@ -90,9 +93,8 @@ export default function FeaturedArticle({ article, reverse, btnColor }) {
               />
               <PrimaryButton
                 href={ARTICLE_ID_ROUTE(article?.slug)}
-                colorScheme="blue"
                 fontSize={textSize}
-                bgColor={btnColor}
+                bgColor={btnColor || "brand.primary"}
                 color="white"
               >
                 Read Now

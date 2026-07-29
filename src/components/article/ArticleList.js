@@ -43,7 +43,17 @@ export default function ArticleList({
   }
 
   return (
-    <PageLayout py={{ base: 8, md: 10 }} px={4}>
+    <PageLayout
+      py={{ base: 8, md: 10 }}
+      px={4}
+      bg="linear-gradient(180deg, rgba(242, 238, 228, 0.45) 0%, rgba(252, 250, 245, 0.95) 100%)"
+      borderRadius={{ base: "none", md: "xl" }}
+      border={{ base: "none", md: "1px solid" }}
+      borderColor={{ base: "transparent", md: "rgba(15, 76, 92, 0.08)" }}
+      boxShadow={{ base: "none", md: "0 8px 24px rgba(16, 33, 58, 0.05)" }}
+      mx={{ base: 0, md: 6, xl: 10 }}
+      my={{ base: 0, md: 5 }}
+    >
       <Flex
         flexDir={{ base: "column", sm: "row" }}
         alignItems={{ base: "center", xl: "flex-end" }}

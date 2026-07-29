@@ -12,8 +12,8 @@ export default function HeroImage({ url, alt }) {
       transitionProperty="opacity"
       transitionDuration="300ms"
       width={{ base: "full", md: "30vw", lg: "35vw" }}
-      bg="gray.50"
-      p={2}
+      bg="rgba(15, 76, 92, 0.06)"
+      p={{ base: 4, md: 6 }}
     >
       <Image
         src={url}
