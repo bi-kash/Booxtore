@@ -27,32 +27,54 @@ export function getHeaders(includeAuth = false, token = null) {
   return headers
 }
 
-// Generic fetch function
+// Generic fetch function with retry logic for build-time resilience
 export async function fetchAPI(path, options = {}) {
-  try {
-    const requestUrl = getAPIURL(path)
-    const headers = options.headers || getHeaders()
+  const maxRetries = 3
+  const baseDelay = 400 // ms — will back off to 400, 800, 1600ms
 
-    const response = await fetch(requestUrl, {
-      ...options,
-      headers: {
-        ...headers,
-        ...options.headers,
-      },
-    })
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const requestUrl = getAPIURL(path)
+      const headers = options.headers || getHeaders()
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Request failed" }))
-      throw new Error(error.error || `HTTP ${response.status}`)
+      const response = await fetch(requestUrl, {
+        ...options,
+        headers: {
+          ...headers,
+          ...options.headers,
+        },
+      })
+
+      if (!response.ok) {
+        const statusCode = response.status
+        const errorBody = await response
+          .json()
+          .catch(() => ({ error: `HTTP ${statusCode}` }))
+        const err = new Error(errorBody.error || `HTTP ${statusCode}`)
+        err.status = statusCode
+        throw err
+      }
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      const isLastAttempt = attempt === maxRetries
+      // Only retry on server/network errors (5xx, network failures), not client errors (4xx)
+      const isRetryable = !error.status || error.status >= 500
+
+      if (isLastAttempt || !isRetryable) {
+        console.error("API Error:", error.message)
+        throw error
+      }
+
+      const delay = baseDelay * Math.pow(2, attempt)
+      console.warn(
+        `API retry ${attempt + 1}/${maxRetries} for ${path} in ${delay}ms (${
+          error.message
+        })`
+      )
+      await new Promise(resolve => setTimeout(resolve, delay))
     }
-
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error("API Error:", error.message)
-    throw error
   }
 }
 
@@ -60,7 +82,9 @@ export async function fetchAPI(path, options = {}) {
 function normalizeArticle(article) {
   return {
     ...article,
-    image_url: article.image || article.image_url|| null,
+    // Ensure `image_url` is JSON-serializable for Next.js getStaticProps
+    // If neither `image` nor `image_url` exist, set to null (not undefined)
+    image_url: article.image || article.image_url || null,
     category:
       typeof article.category === "string"
         ? {
@@ -90,8 +114,13 @@ export async function fetchArticles(params = {}) {
     order,
   })
 
-  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
-  return (data.articles || []).map(normalizeArticle)
+  try {
+    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+    return (data.articles || []).map(normalizeArticle)
+  } catch (error) {
+    console.error("Error fetching articles:", error)
+    return []
+  }
 }
 
 export async function fetchHomeArticles(params = {}) {
@@ -114,8 +143,13 @@ export async function fetchFeatured() {
     order: "desc",
   })
 
-  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
-  return (data.articles || []).map(normalizeArticle)
+  try {
+    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+    return (data.articles || []).map(normalizeArticle)
+  } catch (error) {
+    console.error("Error fetching featured articles:", error)
+    return []
+  }
 }
 
 export async function fetchHero() {
@@ -127,34 +161,44 @@ export async function fetchHero() {
     order: "desc",
   })
 
-  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
-  return data.articles && data.articles.length > 0
-    ? normalizeArticle(data.articles[0])
-    : null
+  try {
+    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+    return data.articles && data.articles.length > 0
+      ? normalizeArticle(data.articles[0])
+      : null
+  } catch (error) {
+    console.error("Error fetching hero article:", error)
+    return null
+  }
 }
 
 export async function fetchByCategory(slug) {
   if (!slug) return { articles: [], category: null }
 
-  // Get the category metadata
-  const categories = await fetchCategories()
-  const category = categories.find(cat => cat.slug === slug)
+  try {
+    // Get the category metadata
+    const categories = await fetchCategories()
+    const category = categories.find(cat => cat.slug === slug)
 
-  if (!category) return { articles: [], category: null }
+    if (!category) return { articles: [], category: null }
 
-  // Use category_slug query parameter for server-side filtering
-  const queryParams = new URLSearchParams({
-    category_slug: slug,
-    status: "published",
-    sort: "date",
-    order: "desc",
-  })
+    // Use category_slug query parameter for server-side filtering
+    const queryParams = new URLSearchParams({
+      category_slug: slug,
+      status: "published",
+      sort: "date",
+      order: "desc",
+    })
 
-  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
 
-  return {
-    articles: (data.articles || []).map(normalizeArticle),
-    category: { name: category.name, slug: category.slug },
+    return {
+      articles: (data.articles || []).map(normalizeArticle),
+      category: { name: category.name, slug: category.slug },
+    }
+  } catch (error) {
+    console.error("Error fetching articles by category:", error)
+    return { articles: [], category: null }
   }
 }
 
@@ -175,19 +219,37 @@ export async function fetchPaginated(page = 1, categorySlug = null) {
     queryParams.append("category_slug", categorySlug)
   }
 
-  const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
-  return (data.articles || []).map(normalizeArticle)
+  try {
+    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+    return (data.articles || []).map(normalizeArticle)
+  } catch (error) {
+    console.error("Error fetching paginated articles:", error)
+    return []
+  }
 }
 
 export async function fetchArticle(slug) {
   if (!slug) return null
 
   try {
-    // First, try to get all articles and filter by slug
-    // This is more reliable than search for exact slug matching
+    // Try the search endpoint first — fetches ~50 records instead of 1000
+    const searchData = await fetchAPI(
+      `/api/v1/articles/search?q=${encodeURIComponent(
+        slug.replace(/-/g, " ")
+      )}&limit=50&status=published`
+    ).catch(() => ({ articles: [] }))
+
+    const searchArticle = (searchData.articles || searchData.results || [])?.find(a => a.slug === slug)
+
+    if (searchArticle) {
+      const fullArticle = await fetchAPI(`/api/v1/articles/${searchArticle.id}`)
+      return normalizeArticle(fullArticle.article)
+    }
+
+    // Fall back to listing articles — slug may not match search keywords
     const queryParams = new URLSearchParams({
       status: "published",
-      limit: "1000", // Get a large number to ensure we find it
+      limit: "1000",
       sort: "date",
       order: "desc",
     })
@@ -196,19 +258,7 @@ export async function fetchArticle(slug) {
     const article = data.articles?.find(a => a.slug === slug)
 
     if (article) {
-      // Get full article details with content
       const fullArticle = await fetchAPI(`/api/v1/articles/${article.id}`)
-      return normalizeArticle(fullArticle.article)
-    }
-
-    // If not found in the main list, try search as fallback
-    const searchData = await fetchAPI(
-      `/api/v1/articles/search?q=${encodeURIComponent(slug)}&limit=50`
-    )
-    const searchArticle = searchData.results?.find(a => a.slug === slug)
-
-    if (searchArticle) {
-      const fullArticle = await fetchAPI(`/api/v1/articles/${searchArticle.id}`)
       return normalizeArticle(fullArticle.article)
     }
 
@@ -221,8 +271,10 @@ export async function fetchArticle(slug) {
 
 export async function fetchArticleSlugs() {
   try {
+    // Limit to 50 most recent at build time — the rest are generated on-demand
+    // via fallback: 'blocking' in getStaticPaths, then cached by ISR
     const data = await fetchAPI(
-      "/api/v1/articles?status=published&limit=1000&sort=title&order=asc"
+      "/api/v1/articles?status=published&limit=50&sort=date&order=desc"
     )
     return (data.articles || []).map(article => ({
       title: article.title,
@@ -235,8 +287,29 @@ export async function fetchArticleSlugs() {
 }
 
 export async function countArticles() {
-  const data = await fetchAPI("/api/v1/articles?status=published&limit=1")
-  return data.total || 0
+  try {
+    const data = await fetchAPI("/api/v1/articles?status=published&limit=1")
+    return data.total || 0
+  } catch (error) {
+    console.error("Error counting articles:", error)
+    return 0
+  }
+}
+
+export async function countArticlesByCategory(slug) {
+  if (!slug) return 0
+  const queryParams = new URLSearchParams({
+    status: "published",
+    category_slug: slug,
+    limit: "1",
+  })
+  try {
+    const data = await fetchAPI(`/api/v1/articles?${queryParams}`)
+    return data.total || 0
+  } catch (error) {
+    console.error("Error counting articles by category:", error)
+    return 0
+  }
 }
 
 // Category Endpoints
