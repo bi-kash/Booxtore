@@ -1,7 +1,7 @@
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-// TENANT_ID is server-side only (no NEXT_PUBLIC_ prefix)
-const TENANT_ID = process.env.TENANT_ID
+// TENANT_ID can be set as TENANT_ID or NEXT_PUBLIC_TENANT_ID
+const TENANT_ID = process.env.TENANT_ID || process.env.NEXT_PUBLIC_TENANT_ID
 
 // Import site settings for category configuration
 import siteSettings from "@/contents/site-settings.json"
