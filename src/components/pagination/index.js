@@ -3,7 +3,9 @@ import { Button, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import Link from "next/link"
 
 export default function Pagination({ current, pages, link }) {
+  if (!pages || pages <= 1) return null
   const pagination = generatePagination(current, pages)
+  if (!pagination || pagination.length === 0) return null
   return (
     <UnorderedList
       listStyleType="none"

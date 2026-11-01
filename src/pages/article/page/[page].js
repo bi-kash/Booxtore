@@ -21,35 +21,84 @@ export default function Page({ articles, pagination, page }) {
 }
 
 export async function getStaticProps({ params }) {
-  const page = parseInt(params.page)
-  const postsPerPage = config.posts_per_page || 9
-  const articles = (await fetchArticles()).slice(
-    (params.page - 1) * postsPerPage,
-    params.page * postsPerPage
-  )
-  const count = await countArticles()
-  const pagination = {
-    current: page,
-    pages: Math.ceil(count / postsPerPage),
-  }
-  return {
-    props: {
-      articles,
-      pagination,
-      page,
-    },
+  try {
+    const page = parseInt(params.page, 10)
+    if (isNaN(page) || page < 1) {
+      return {
+        notFound: true,
+      }
+    }
+
+    if (page === 1) {
+      return {
+        redirect: {
+          destination: "/article",
+          permanent: false,
+        },
+      }
+    }
+
+    const postsPerPage = config.posts_per_page || 9
+    const offset = (page - 1) * postsPerPage
+
+    const [articles, count] = await Promise.all([
+      fetchArticles({ limit: postsPerPage, offset }),
+      countArticles(),
+    ])
+
+    const totalPages = Math.ceil((count || 0) / postsPerPage)
+
+    const pagination = {
+      current: page,
+      pages: totalPages,
+    }
+
+    return {
+      props: {
+        articles: articles || [],
+        pagination,
+        page,
+      },
+      revalidate: 60,
+    }
+  } catch (error) {
+    console.error("Error in getStaticProps for article page:", error)
+    return {
+      props: {
+        articles: [],
+        pagination: {
+          current: parseInt(params.page, 10) || 1,
+          pages: 0,
+        },
+        page: parseInt(params.page, 10) || 1,
+      },
+      revalidate: 60,
+    }
   }
 }
 
 export async function getStaticPaths() {
-  const postsPerPage = config.posts_per_page || 9
-  const count = await countArticles()
-  const pages = Math.ceil(count / postsPerPage)
-  const paths = Array.from(Array(pages - 1).keys()).map(it => ({
-    params: { page: (it + 2).toString() },
-  }))
-  return {
-    paths: paths,
-    fallback: false,
+  try {
+    const postsPerPage = config.posts_per_page || 9
+    const count = await countArticles()
+    const pages = Math.ceil((count || 0) / postsPerPage)
+    const paths = []
+
+    for (let i = 2; i <= pages; i++) {
+      paths.push({
+        params: { page: i.toString() },
+      })
+    }
+
+    return {
+      paths,
+      fallback: "blocking",
+    }
+  } catch (error) {
+    console.error("Error generating article pagination paths:", error)
+    return {
+      paths: [],
+      fallback: "blocking",
+    }
   }
 }
